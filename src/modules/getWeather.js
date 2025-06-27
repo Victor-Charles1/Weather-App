@@ -13,7 +13,10 @@ async function getWeather(location) {
     }
   
     // Get API key form the environment
+    const apiKey = process.env.WEATHER_API_KEY;
+    if (!apiKey) throw new Error('API key missing');
   
+
     // Encode location and construct URL
     const encodedLocation = encodeURIComponent(location);
     const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${encodedLocation}/today?key=${apiKey}`;
@@ -28,12 +31,41 @@ async function getWeather(location) {
         throw new Error(`API Error ${response.status}: ${errorData.message || 'Unknown error'}`);
       }
       
-      return await response.json();
+      //return await response.json();
     } catch (error) {
       console.error('Weather fetch failed:', error);
       throw new Error('Failed to retrieve weather data');
     }
   }
 
+  getWeather('london');
+
 // function that processes JSON and returns an object with only data needed for app
-    // async function cleanData(params) {}
+function cleanData(rawData) {
+    // Validate response structure?
+   
+    // deconstucting object for specific properties.
+    const today = rawData.days[0];
+    const { 
+      temp, 
+      conditions, 
+      humidity, 
+      windspeed, 
+      icon, 
+      tempmax, 
+      tempmin 
+    } = today;
+  
+    return {
+      location: rawData.resolvedAddress || rawData.address || 'Unknown',
+      temperature: temp,
+      conditions,
+      humidity,
+      windSpeed: windspeed,
+      icon,
+      high: tempmax,
+      low: tempmin,
+      sunrise: today.sunrise,
+      sunset: today.sunset
+    };
+  }
