@@ -1,4 +1,5 @@
-import { createBaseLayout } from './ui.js';
+import { createBaseLayout,renderWeather } from './ui.js';
+import { getWeather, cleanData } from './getWeather.js';
 
 export function initApp() {
   const appContainer = document.getElementById('app');
@@ -19,9 +20,25 @@ function setupEventListeners(form) {
     input.value = '';
     
     if (location) {
-      // Import handler dynamically to avoid circular dependencies
-      const { handleSearch } = await import('./ui.js');
       handleSearch(location, form.nextElementSibling); // Pass weather display element
     }
   });
+}
+
+// Handle search functionality
+export async function handleSearch(location, displayElement) {
+  try {
+    // Show loading state
+    displayElement.innerHTML = '<div class="loading">Loading weather data...</div>';
+    
+    // Get and process data
+    const rawData = await getWeather(location);
+    const cleanWeather = cleanData(rawData);
+    console.log('Date from cleaned response:',cleanWeather)
+    
+    // Display results
+    renderWeather(cleanWeather, displayElement);
+  } catch (error) {
+    displayElement.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+  }
 }
