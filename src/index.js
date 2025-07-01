@@ -1,6 +1,4 @@
-import './modules/getWeather'
+import { initApp } from './modules/app.js';
+import './styles/main.css'
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Should be first message ')
-    
-});
+document.addEventListener('DOMContentLoaded', initApp);
