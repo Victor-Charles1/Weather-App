@@ -1,12 +1,6 @@
-// async function getWeather(location) {
-//     const location = location;
-//     const response = await fetch('https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/[location]/today?key=YOUR_API_KEY', {mode: 'cors'});
-//     const weatherData = await response.json();
-//     console.log(weatherData);
-    
-// }
 
-async function getWeather(location) {
+
+export async function getWeather(location) {
     // Validate input
     if (!location || typeof location !== 'string') {
       throw new Error('Invalid location input');
@@ -31,18 +25,20 @@ async function getWeather(location) {
         throw new Error(`API Error ${response.status}: ${errorData.message || 'Unknown error'}`);
       }
       
-      //return await response.json();
+      return weatherData;
     } catch (error) {
       console.error('Weather fetch failed:', error);
       throw new Error('Failed to retrieve weather data');
     }
   }
 
-  getWeather('london');
 
 // function that processes JSON and returns an object with only data needed for app
-function cleanData(rawData) {
+export function cleanData(rawData) {
     // Validate response structure?
+    if (!rawData ) {
+      throw new Error('Invalid weather data received');
+    }
    
     // deconstucting object for specific properties.
     const today = rawData.days[0];
@@ -53,7 +49,8 @@ function cleanData(rawData) {
       windspeed, 
       icon, 
       tempmax, 
-      tempmin 
+      tempmin,
+      timezone 
     } = today;
   
     return {
@@ -66,6 +63,7 @@ function cleanData(rawData) {
       high: tempmax,
       low: tempmin,
       sunrise: today.sunrise,
-      sunset: today.sunset
+      sunset: today.sunset,
+      timeZone:rawData.timezone
     };
   }
